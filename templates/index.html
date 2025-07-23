@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shaista Airways - Flight Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="logo">
+                    <span class="logo-icon">✈</span>
+                    <span class="logo-text">Shaista Airways</span>
+                </div>
+            </div>
+            <div class="nav-menu">
+                <a href="#homeView" class="nav-link active" data-view="home">Home</a>
+                <a href="#flightsSection" class="nav-link" data-view="flights">Flights</a>
+                <div class="nav-auth" id="navAuth">
+                    <a href="#" class="nav-link" data-view="login">Login</a>
+                    <a href="#" class="nav-link register-btn" data-view="register">Register</a>
+                    <!-- User name clickable for logged-in passenger -->
+                   <!-- {% if user and role == 'user' %}
+                    <div class="user-profile">
+                        <a href="#" class="nav-link user-profile-link" id="userProfileLink">{{ user }}</a>
+                        <div class="user-flights-dropdown" id="userFlightsDropdown" style="display: none;">
+                            <h3>Your Booked Flights</h3>
+                            <ul id="userFlightsList">
+                              
+                         </ul>
+                       </div>
+                 </div>
+                   {% endif %}  -->
+                   {% if user and role == 'user' %}
+                  <div class="user-profile">
+                    <a href="#" class="nav-link" id="userProfileLink">{{ user }}</a>
+                   <div class="user-flights-dropdown" id="userFlightsDropdown">
+                      <h3>Your Booked Flights</h3>
+                      <ul id="userFlightsList">
+                      <!-- Booked flights will appear here -->
+                      </ul>
+                   </div>
+                  </div>
+{% endif %}
+
+                </div>
+            </div>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Alert System -->
+    <div class="alert-container" id="alertContainer"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Home View -->
+        <div class="view active" id="homeView">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <h1 class="hero-title">Find Your Perfect Flight</h1>
+                    <p class="hero-subtitle">Book with confidence and travel in comfort</p>
+                    
+                    <!-- Flight Search Form -->
+                    <div class="search-form">
+                        <div class="search-row">
+                            <div class="search-field">
+                                <label>From</label>
+                                <select id="searchOrigin">
+                                    <option value="">Select Origin</option>
+                                    <option value="Lahore">Lahore</option>
+                                    <option value="Karachi">Karachi</option>
+                                    <option value="Islamabad">Islamabad</option>
+                                    <option value="Sialkot">Sialkot</option>
+                                    <option value="Multan">Multan</option>
+                                </select>
+                            </div>
+                            <div class="search-field">
+                                <label>To</label>
+                                <select id="searchDestination">
+                                    <option value="">Select Origin</option>
+                                    <option value="Lahore">Lahore</option>
+                                    <option value="Karachi">Karachi</option>
+                                    <option value="Islamabad">Islamabad</option>
+                                    <option value="Sialkot">Sialkot</option>
+                                    <option value="Multan">Multan</option>
+                                </select>
+                            </div>
+                            <div class="search-field">
+                                <label>Date</label>
+                                <input type="date" id="searchDate">
+                            </div>
+                            <button class="search-btn" onclick="searchFlights()">
+                                <span class="btn-icon">🔍</span>
+                                Search Flights
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Available Flights Section -->
+            <section class="flights-section" id="flightsSection">
+                <div class="section-header">
+                    <h2>Available Flights</h2>
+                    <p>Choose from our premium selection of flights</p>
+                </div>
+                
+                <div class="flights-container">
+                    <div class="flights-table-container">
+                        <table class="flights-table" id="flightsTable">
+                            <thead>
+                                <tr>
+                                    <th>Flight</th>
+                                    <th>Route</th>
+                                    <th>Date & Time</th>
+                                    <th>Duration</th>
+                                    <th>Seats</th>
+                                    <th>Price</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="flightsTableBody">
+                                <!-- Flights will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Login View -->
+        <div class="view" id="loginView">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <h2>Welcome Back</h2>
+                        <p>Sign in to your account</p>
+                    </div>
+                    <form class="auth-form" id="loginForm">
+                        <div class="form-group">
+                            <label for="loginEmail">Email Address</label>
+                            <input type="email" id="loginEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" required>
+                        </div>
+                        <button type="submit" class="auth-btn">Sign In</button>
+                    </form>
+                    <div class="auth-footer">
+                        <p>Don't have an account? <a href="#" data-view="register">Register here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register View -->
+        <div class="view" id="registerView">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <h2>Create Account</h2>
+                        <p>Join Shaista Airways today</p>
+                    </div>
+                    <form class="auth-form" id="registerForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="registerFirstName">First Name</label>
+                                <input type="text" id="registerFirstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="registerLastName">Last Name</label>
+                                <input type="text" id="registerLastName" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerEmail">Email Address</label>
+                            <input type="email" id="registerEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPassword">Password</label>
+                            <input type="password" id="registerPassword" required>
+                        </div>
+                        <!-- <div class="form-group">
+                            <label for="registerRole">Account Type</label>
+                            <select id="registerRole" required>
+                                <option value="">Select Role</option>
+                                <option value="user">Passenger</option>
+        
+                            </select>
+                        </div> -->
+                        <button type="submit" class="auth-btn">Create Account</button>
+                    </form>
+                    <div class="auth-footer">
+                        <p>Already have an account? <a href="#" data-view="login">Sign in here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard View -->
+        <div class="view" id="adminView">
+            <div class="dashboard-container">
+                <div class="dashboard-header">
+                    <h1>Flight Management Dashboard</h1>
+                    <button class="add-flight-btn" onclick="showAddFlightModal()">
+                        <span class="btn-icon">+</span>
+                        Add New Flight
+                    </button>
+                </div>
+                
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <h3 id="totalFlights">{{ total_flights }}</h3>
+                        <p>Total Flights</p>
+
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalSeats">{{ total_seats }}</h3>
+                        <p>Available Seats</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalRevenue">Rs. {{ total_revenue }}</h3>
+                        <p>Estimated Revenue</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-table">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Flight Number</th>
+                                <th>Route</th>
+                                <th>Date & Time</th>
+                                <th>Seats</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminFlightsTableBody">
+                           
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Flight Management Modal -->
+    <div class="modal" id="flightModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add New Flight</h3>
+                <button class="modal-close" onclick="closeFlightModal()">&times;</button>
+            </div>
+            <form class="modal-form" id="flightForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="flightNumber">Flight Number</label>
+                        <input type="text" id="flightNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="aircraft">Aircraft Type</label>
+                        <select id="aircraft" required>
+                           <option value="">Select Aircraft</option>
+                          <option value="PIA Boeing 777">PIA Boeing 777</option>
+                          <option value="PIA Airbus A320">PIA Airbus A320</option>
+                          <option value="PIA ATR 42">PIA ATR 42</option>
+                          <option value="PIA ATR 72">PIA ATR 72</option>
+                          <option value="Airblue Airbus A320">Airblue Airbus A320</option>
+                          <option value="Airblue Airbus A321">Airblue Airbus A321</option>
+                          <option value="Serene Air Boeing 737">Serene Air Boeing 737</option>
+                          <option value="Fly Jinnah Airbus A320">Fly Jinnah Airbus A320</option>
+
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="origin">Origin</label>
+                        <select id="origin" required>
+                            <option value="">Select Origin</option>
+                            <option value="Lahore">Lahore </option>
+                            <option value="Karachi">Karachi </option>
+                            <option value="Islamabad">Islamabad (ISB)</option>
+                            <option value="Sialkot">Sialkot </option>
+                            <option value="multan">Multan </option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="destination">Destination</label>
+                        <select id="destination" required>
+                            <option value="">Select Destination</option>
+                            <option value="Lahore">Lahore </option>
+                            <option value="Karachi">Karachi </option>
+                            <option value="Islamabad">Islamabad (ISB)</option>
+                            <option value="Sialkot">Sialkot </option>
+                            <option value="multan">Multan </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="flightDate">Date</label>
+                        <input type="date" id="flightDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="flightTime">Time</label>
+                        <input type="time" id="flightTime" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="duration">Duration (hours)</label>
+                        <input type="number" id="duration" step="0.5" min="0.5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="seats">Available Seats</label>
+                        <input type="number" id="seats" min="1" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="price">Price (Rs.)</label>
+                    <input type="number" id="price" min="1" step="0.01" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeFlightModal()">Cancel</button>
+                    <button type="submit" class="btn-primary" id="submitFlightBtn">Add Flight</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirmationModal">
+        <div class="modal-content confirmation-modal">
+            <div class="confirmation-icon">⚠️</div>
+            <h3 id="confirmationTitle">Confirm Action</h3>
+            <p id="confirmationMessage">Are you sure you want to perform this action?</p>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeConfirmationModal()">Cancel</button>
+                <button class="btn-danger" id="confirmActionBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Activities Modal -->
+    <div class="modal" id="userActivitiesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>User Activities</h3>
+                <button class="modal-close" onclick="closeUserActivitiesModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="userActivitiesContent">
+                <!-- Booked flights and other activities will be shown here -->
+                <p>No activities found.</p>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+    // Autofill login form after registration
+    document.addEventListener('DOMContentLoaded', function() {
+        const registerForm = document.getElementById('registerForm');
+        if (registerForm) {
+            registerForm.addEventListener('submit', function(e) {
+                setTimeout(function() {
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    if (users.length > 0) {
+                        const lastUser = users[users.length - 1];
+                        const loginEmail = document.getElementById('loginEmail');
+                        const loginPassword = document.getElementById('loginPassword');
+                        if (loginEmail && loginPassword) {
+                            loginEmail.value = lastUser.email;
+                            loginPassword.value = lastUser.password;
+                        }
+                    }
+                }, 100);
+            });
+        }
+    });
+    </script>
+</body>
+</html>
