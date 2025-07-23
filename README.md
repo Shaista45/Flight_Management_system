@@ -49,7 +49,7 @@ Flight_Management_system/
 > Only one admin can log in (credentials are defined in `app.py`):
 
 ```
-📧 Email:    admin@example.pk  
+📧 Email:    admin@example.com 
 🔑 Password: admin123  
 ```
 
